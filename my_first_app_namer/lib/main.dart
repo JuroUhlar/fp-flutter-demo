@@ -1,6 +1,10 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:fpjs_pro_plugin/error.dart' show FingerprintProError;
 import 'package:provider/provider.dart';
+
+import 'package:fpjs_pro_plugin/fpjs_pro_plugin.dart';
+import 'package:fpjs_pro_plugin/region.dart' show Region;
 
 void main() {
   runApp(MyApp());
@@ -52,6 +56,31 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
+  var visitorId = 'Unknown';
+  @override
+  void initState() {
+    super.initState();
+    doInit();
+  }
+
+  void doInit() async {
+    await FpjsProPlugin.initFpjs(
+      '2UZgp3skqLzfJpFUGUrw',
+      // endpoint: 'https://fp.jurajuhlar.eu',
+      region: Region.eu,
+    );
+    identify();
+  }
+
+  void identify() async {
+    try {
+      visitorId = await FpjsProPlugin.getVisitorId() ?? 'Unknown';
+      print(visitorId);
+    } on FingerprintProError catch (e) {
+      print(e);
+      // check lib/error.dart to get more info about error types
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +120,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     selectedIndex = value;
                   });
                 },
+                trailing: Column(
+                  children: [
+                    Text(visitorId),
+                    ElevatedButton(
+                      onPressed: () {
+                        identify();
+                      },
+                      child: Text('Identify'),
+                    ),
+                  ],
+                ),
               ),
             ),
             // Expanded is like flex-grow in CSSs
