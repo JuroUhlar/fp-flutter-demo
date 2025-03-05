@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await FpjsProPlugin.initFpjs(
       '2UZgp3skqLzfJpFUGUrw',
       // endpoint: 'https://fp.jurajuhlar.eu',
-      region: Region.eu,
+      // region: Region.eu,
     );
     identify();
   }
