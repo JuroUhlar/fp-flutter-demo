@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fpjs_pro_plugin/error.dart' show FingerprintProError;
 import 'package:fpjs_pro_plugin/fpjs_pro_plugin.dart';
+import 'package:fpjs_pro_plugin/result.dart';
 
 void main() {
   runApp(const MainApp());
@@ -14,31 +15,43 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
+  FingerprintJSProResponse? visitorData;
+
   @override
   void initState() {
     super.initState();
     initFingerprint();
   }
 
+    
   void initFingerprint() async {
     try {
-      await FpjsProPlugin.initFpjs('eajUlf6axysf2z89ZVWx');
+      await FpjsProPlugin.initFpjs(
+        'eajUlf6axysf2z89ZVWx',
+        // To do: why dees this error if set to true?
+        extendedResponseFormat: false,
+      );
       identify();
     } on FingerprintProError catch (e) {
       print(e);
     }
   }
 
-  void identify() async {
+  Future<void> identify() async {
+    FingerprintJSProResponse? response;
     try {
-      var visitorId = await FpjsProPlugin.getVisitorId() ?? 'Unknown';
-      print(visitorId);
+      response = await FpjsProPlugin.getVisitorData();
+      print(response);
       // use the visitor id
     } on FingerprintProError catch (e) {
       print(e);
+      // visitorData = null;
       // process an error somehow
       // check lib/error.dart to get more info about error types
     }
+    setState(() {
+      visitorData = response;
+    });
   }
 
   @override
@@ -46,7 +59,20 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Text('Hello Fpjs World!'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Hello Fpjs World!'),
+              Text('Visitor ID: ${visitorData?.visitorId ?? 'Unknown'}'),
+              Text('Visitor Data: ${visitorData?.toJson()}'),
+              ElevatedButton(
+                onPressed: () {
+                  identify();
+                },
+                child: Text('Identify'),
+              ),
+            ],
+          ),
         ),
       ),
     );
