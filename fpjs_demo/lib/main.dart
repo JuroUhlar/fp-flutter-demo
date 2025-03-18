@@ -29,7 +29,7 @@ class _MainAppState extends State<MainApp> {
       await FpjsProPlugin.initFpjs(
         'eajUlf6axysf2z89ZVWx',
         // To do: why dees this error if set to true?
-        extendedResponseFormat: false,
+        extendedResponseFormat: true,
       );
       identify();
     } on FingerprintProError catch (e) {
@@ -45,6 +45,7 @@ class _MainAppState extends State<MainApp> {
       // use the visitor id
     } on FingerprintProError catch (e) {
       print(e);
+      print(e.stacktrace);
       // visitorData = null;
       // process an error somehow
       // check lib/error.dart to get more info about error types
